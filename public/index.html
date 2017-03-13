@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hello, World! - A-Frame</title>
+    <meta name="description" content="Hello, World! - A-Frame">
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://npmcdn.com/aframe-template-component@3.1.1"></script>
+    <script src="https://npmcdn.com/aframe-layout-component@3.0.1"></script>
+    <script>
+      /******/ (function(modules) { // webpackBootstrap
+      /******/  // The module cache
+      /******/  var installedModules = {};
+
+      /******/  // The require function
+      /******/  function __webpack_require__(moduleId) {
+
+      /******/    // Check if module is in cache
+      /******/    if(installedModules[moduleId])
+      /******/      return installedModules[moduleId].exports;
+
+      /******/    // Create a new module (and put it into the cache)
+      /******/    var module = installedModules[moduleId] = {
+      /******/      exports: {},
+      /******/      id: moduleId,
+      /******/      loaded: false
+      /******/    };
+
+      /******/    // Execute the module function
+      /******/    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+      /******/    // Flag the module as loaded
+      /******/    module.loaded = true;
+
+      /******/    // Return the exports of the module
+      /******/    return module.exports;
+      /******/  }
+
+
+      /******/  // expose the modules object (__webpack_modules__)
+      /******/  __webpack_require__.m = modules;
+
+      /******/  // expose the module cache
+      /******/  __webpack_require__.c = installedModules;
+
+      /******/  // __webpack_public_path__
+      /******/  __webpack_require__.p = "";
+
+      /******/  // Load entry module and return exports
+      /******/  return __webpack_require__(0);
+      /******/ })
+      /************************************************************************/
+      /******/ ([
+      /* 0 */
+      /***/ function(module, exports) {
+
+        var debug = AFRAME.utils.debug;
+        var coordinates = AFRAME.utils.coordinates;
+
+        var warn = debug('components:look-at:warn');
+        var isCoordinate = coordinates.isCoordinate;
+
+        delete AFRAME.components['look-at'];
+
+        /**
+         * Look-at component.
+         *
+         * Modifies rotation to either track another entity OR do a one-time turn towards a position
+         * vector.
+         *
+         * If tracking an object via setting the component value via a selector, look-at will register
+         * a behavior to the scene to update rotation on every tick.
+         */
+        AFRAME.registerComponent('look-at', {
+          schema: {
+            default: '',
+
+            parse: function (value) {
+              // A static position to look at.
+              if (isCoordinate(value) || typeof value === 'object') {
+                return coordinates.parse(value);
+              }
+              // A selector to a target entity.
+              return value;
+            },
+
+            stringify: function (data) {
+              if (typeof data === 'object') {
+                return coordinates.stringify(data);
+              }
+              return data;
+            }
+          },
+
+          init: function () {
+            this.target3D = null;
+            this.vector = new THREE.Vector3();
+          },
+
+          /**
+           * If tracking an object, this will be called on every tick.
+           * If looking at a position vector, this will only be called once (until further updates).
+           */
+          update: function () {
+            var self = this;
+            var target = self.data;
+            var object3D = self.el.object3D;
+            var targetEl;
+
+            // No longer looking at anything (i.e., look-at="").
+            if (!target || (typeof target === 'object' && !Object.keys(target).length)) {
+              return self.remove();
+            }
+
+            // Look at a position.
+            if (typeof target === 'object') {
+              return object3D.lookAt(new THREE.Vector3(target.x, target.y, target.z));
+            }
+
+            // Assume target is a string.
+            // Query for the element, grab its object3D, then register a behavior on the scene to
+            // track the target on every tick.
+            targetEl = self.el.sceneEl.querySelector(target);
+            if (!targetEl) {
+              warn('"' + target + '" does not point to a valid entity to look-at');
+              return;
+            }
+            if (!targetEl.hasLoaded) {
+              return targetEl.addEventListener('loaded', function () {
+                self.beginTracking(targetEl);
+              });
+            }
+            return self.beginTracking(targetEl);
+          },
+
+          tick: function (t) {
+            // Track target object position. Depends on parent object keeping global transforms up
+            // to state with updateMatrixWorld(). In practice, this is handled by the renderer.
+            var target3D = this.target3D;
+            if (target3D) {
+              var vector = this.el.object3D.parent.worldToLocal(target3D.getWorldPosition());
+              return this.el.object3D.lookAt(vector);
+            }
+          },
+
+          beginTracking: function (targetEl) {
+            this.target3D = targetEl.object3D;
+          }
+        });
+
+
+      /***/ }
+      /******/ ]);
+    </script>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+  </head>
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+  </head>
+  <body>
+  <script type="text/javascript">
+    var bool = true;
+    var first = true;
+    var dInput;
+    if(AFRAME.utils.device.isMobile ()){
+      AFRAME.registerComponent('flower-listener', {
+        init: function () {
+          this.el.addEventListener('click', function (evt) {
+            var a = new THREE.Vector3(Number($(this).attr("data-xpos")), Number($(this).attr("data-ypos")), Number($(this).attr("data-zpos")));
+
+            //no arguments; will be initialised to (0, 0, 0)
+            var b = new THREE.Vector3(0,0,0);
+
+            var d = a.distanceTo( b );
+            // alert(evt);
+            
+            var adjustedHeight = Number($(this).attr("data-ypos"))+(d/4);
+            // alert(adjustedHeight);
+            function getPointInBetweenByLen(pointA, pointB, length) {
+
+                var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(length);
+                return pointA.clone().add(dir);
+
+            }
+            var newPointAbs = getPointInBetweenByLen(b, a, 2);
+            // sphere.position.set(newPointAbs.x, newPointAbs.y, newPointAbs.z);
+          //   $('#test1').append('<a-plane id="'+$(this).attr("data-id")+'" height="1" width="2" position="'+
+          //     $(this).attr("data-xpos") +' '+ 
+          //     $(this).attr("data-ypos") +' '+
+          //     $(this).attr("data-zpos") +' " material="src: #my-texture; side: double;" look-at="[camera]" text="align: center; color: black; value:'+$(this).attr("data-title")+'"><a-animation attribute="position" to=" '+newPointAbs.x+' '+0+' '+newPointAbs.z+'" dur="5000"></a-animation><a-animation attribute="scale" to="1 1 1" dur="5000"></a-animation></a-plane>');
+          // });
+            $('#test1').append('<a-text class="remove" id="'+$(this).attr("data-id")+'" position="'+
+              $(this).attr("data-xpos") +' '+ 
+              $(this).attr("data-ypos") +' '+
+              $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" width="10" color= "black" value=" '+$(this).attr("data-title")+'" scale="0.01 0.01 0.01"><a-animation attribute="position" to=" '+newPointAbs.x+' '+0+' '+newPointAbs.z+'" dur="5000"></a-animation><a-animation attribute="scale" to="1 1 1" dur="5000"></a-animation></a-text><a-box x-listener position="'+
+              $(this).attr("data-xpos") +' '+ 
+              $(this).attr("data-ypos") +' '+
+              $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" color= "red" scale="0.01 0.01 0.01"><a-animation attribute="position" to=" '+newPointAbs.x+' '+'-0.5'+' '+newPointAbs.z+'" dur="5000"></a-animation><a-animation attribute="scale" to="0.3 0.3 0.3" dur="5000"></a-animation></a-box>');
+          });
+          //   $('#test1').append('<a-entity id="'+$(this).attr("data-id")+'" height="1" width="2" position="'+
+          //     $(this).attr("data-xpos") +' '+ 
+          //     $(this).attr("data-ypos") +' '+
+          //     $(this).attr("data-zpos") +' " obj-model="obj:#text-obj" look-at="[camera]" text="align: center; width:100; color: black; value:'+$(this).attr("data-title")+'" scale="0.01 0.01 0.01"><a-animation attribute="position" to=" '+newPointAbs.x+' '+0+' '+newPointAbs.z+'" dur="5000"></a-animation><a-animation attribute="scale" to="1 1 1" dur="5000"></a-animation></a-entity>');
+          // });
+          // <a-entity id="landscape" ground-listener obj-model="obj: #landscape-obj; mtl: #landscape-mtl;" position="75.88 -63.16 3.64" scale="1 1 1" ></a-entity>
+
+          //   $('#test1').append('<a-box id="boxy" height="1" width="1" depth="1" color="red" position="'+
+          //     $(this).attr("data-xpos") +' '+ 
+          //     $(this).attr("data-ypos") +' '+
+          //     $(this).attr("data-zpos") +' " look-at="[camera]"><a-animation attribute="scale" to="10 10 10" dur="5000"></a-animation><a-animation attribute="position" to=" '+$(this).attr("data-xpos")+' 1.6 '+$(this).attr("data-zpos")+'" dur="5000"></a-animation></a-animation><a-animation attribute="rotation" to="360 360 360" dur="5000"></a-animation></a-box>');
+          // });
+        }
+      });
+      AFRAME.registerComponent('x-listener', {
+        init: function () {
+          // var COLORS = ['red', 'green', 'blue'];
+          this.el.addEventListener('click', function (evt) {
+            // console.log($("'#"+$(this).attr("id")+"'"));
+            // alert($("'#"+$(this).attr("data-id")+"'"));
+            $(".remove").remove();
+            $(this).remove();
+            // var randomIndex = Math.floor(Math.random() * COLORS.length);
+            // this.setAttribute('material', 'color', COLORS[randomIndex]);
+            // console.log('I was clicked at: ', evt.detail.intersection.point.y);
+          });
+        }
+      });
+    }
+    else{
+      AFRAME.registerComponent('ground-listener', {
+        init: function () {
+          // var COLORS = ['red', 'green', 'blue'];
+          this.el.addEventListener('raycaster-intersected', function (evt) {
+            // var randomIndex = Math.floor(Math.random() * COLORS.length);
+            // this.setAttribute('material', 'color', COLORS[randomIndex]);
+            if(bool == false){
+              $('#hand-rose').empty();
+              $.post( "http://localhost:3030/flowers", { title: dInput, xpos: evt.detail.intersection.point.x, ypos:evt.detail.intersection.point.y, zpos:evt.detail.intersection.point.z })
+                .done(function( data ) {
+                  // alert( "Data Loaded: " + data );
+                  $(document).trigger('testEvent');
+                  bool = true;
+                });
+              // $('#test1').append('<a-entity template="src: #rose" data-xPos="'+evt.detail.intersection.point.x+'"data-yPos="'+evt.detail.intersection.point.y+'" data-zPos="'+evt.detail.intersection.point.z+'"></a-entity>');
+            }
+            // console.log('I was clicked at: ', evt.detail.intersection.point.y);
+          });
+        }
+      });
+      AFRAME.registerComponent('nav-listener', {
+        init: function () {
+          // var COLORS = ['red', 'green', 'blue'];
+          this.el.addEventListener('click', function (evt) {
+            $("#input-modal").html("<input id='input-box' type='text' placeholder ='type a message and press enter to plant it'/>").promise().done(function(){
+              //your callback logic / code here
+                $('#input-box').on('input', function() {
+                  dInput = this.value;
+                  // console.log(dInput);
+                });
+                $('#input-box').keypress(function (e) {
+                  if (e.which == 13) {
+                    // console.log(dInput);
+                    $('#input-modal').empty();
+                    $('#camera').append('<a-entity id="hand-rose" template="src: #rose" data-title="temp or something" data-xPos="'+0+'"data-yPos="'+'-3.5'+'" data-zPos="'+'-'+2+'" data-scale="1" data-id="rose-placeholder" rotation="60 0 0"></a-entity>');
+                    $("#plant-button").html("<img id='plant-svg' src='/assets/PLANT!.svg'/>");
+                  }
+                });
+              });;
+            if(first){
+              // $("#test1").trigger("clickme");
+              // $("#modal").attr("visible", "true");
+              
+            }
+            // else{
+            //   $("#modal").attr("visible", "false");
+            // }
+          });
+        }
+      });
+    }
+    $( document ).ready(function() {
+        $(document).trigger('testEvent');
+        $("#plant-button").on("click", function(){
+          bool = false;
+          // $(document).trigger("plant-here");
+          $("#hand-rose").remove();
+          $("#plant-button").remove();
+        });
+
+    });
+    Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+      return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
+    // $(document).click(function(){
+    //   $('#test1').append('<a-entity template="src: #rose" data-yPos="'+2+'"></a-entity>');
+    // });
+    $(document).on('testEvent', function(e) { 
+      $.get( "http://192.168.1.5:3030/flowers/?$limit=false", function( data ) {
+        for(var i = 0; i<data.data.length;i++){
+          var a = new THREE.Vector3(data.data[i].xpos, data.data[i].ypos, data.data[i].zpos);
+
+          //no arguments; will be initialised to (0, 0, 0)
+          var b = new THREE.Vector3(0,1.6,0);
+
+          var d = a.distanceTo( b );
+          console.log("the vector is:" + d);
+          $('#test1').append('<a-entity flower-listener template="src: #rose" data-id="'+data.data[i]._id+'" data-title="'+data.data[i].title+'" data-xPos="'+data.data[i].xpos+'"data-yPos="'+data.data[i].ypos+'" data-zPos="'+data.data[i].zpos+'" data-scale=" +'+d.map(0,600,0.5,30)+'"></a-entity>');
+
+        }
+        // $( ".result" ).html( data );
+        // console.log( data.data[0].text );
+      });
+    });
+    
+  </script>
+    <a-scene id="test1">
+      <a-assets>
+        <a-asset-item id="landscape-obj" src="/assets/landscape2.obj"></a-asset-item>
+        <a-asset-item id="landscape-mtl" src="/assets/landscape2.mtl"></a-asset-item>
+        <a-asset-item id="rose-obj" src="/assets/rose.obj"></a-asset-item>
+        <a-asset-item id="rose-mtl" src="/assets/rose.mtl"></a-asset-item>
+        <a-asset-item id="vase-obj" src="/assets/vase.obj"></a-asset-item>
+        <a-asset-item id="vase-mtl" src="/assets/vase.mtl"></a-asset-item>
+        <a-asset-item id="text-obj" src="/assets/text-obj.obj"></a-asset-item>
+        <a-asset-item id="text-mtl" src="/assets/text-obj.mtl"></a-asset-item>
+        <script id="rose" type="text/html">
+          <a-entity class="link"
+            obj-model="obj: #rose-obj; mtl: #rose-mtl;"
+            scale="${scale} ${scale} ${scale}"
+            id="${id}"
+            title="${title}"
+            position="${xpos} ${ypos} ${zpos}"></a-entity>
+        </script>
+
+      </a-assets>
+<!--       <a-entity class="link" obj-model="obj: #rose-obj;" scale="0.08 0.08 0.08" position="0 -1.5 -2.76"></a-entity> -->
+<!--       <a-entity template="src: #boxesTemplate"
+                data-box1color="red" data-box2color="green" data-box3color="blue"></a-entity> -->
+<!--       <a-entity id="test1" template="src: #rose" data-yPos="0"></a-entity>
+      <a-entity template="src: #rose" data-yPos="0"></a-entity>
+      <a-entity template="src: #rose" data-yPos="2"></a-entity>
+      <a-entity template="src: #rose" data-yPos="4"></a-entity> -->
+<!--       <a-entity obj-model="obj: url(/Rose.obj)"></a-entity> -->
+<!--       <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box> -->
+<!--       <a-plane nav-listener position="0 0 -2" rotation="0 0 0" width="4" height="4" color="red"></a-plane> -->
+      <a-entity nav-listener obj-model="obj: #vase-obj; mtl:#vase-mtl;" scale="0.2 0.2 0.2" position="0 -2.75 -3.27" rotation="0 50 0"></a-entity>
+<!--       <a-plane ground-listener position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#7BC8A4"></a-plane> -->
+      <a-entity id="landscape" ground-listener obj-model="obj: #landscape-obj; mtl: #landscape-mtl;" position="75.88 -63.16 3.64" scale="1 1 1" ></a-entity>
+      <a-entity id = "camera" camera="userHeight: 0" look-controls>
+        <a-cursor id="cursor"></a-cursor>
+      </a-entity>
+    </a-scene>
+    <div id="input-modal"></div>
+    <div id="plant-button"></div>
+  </body>
+</html>

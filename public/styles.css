@@ -1,0 +1,40 @@
+#input-box{
+	position:fixed;
+	left: 0;
+	right:0;
+	top:60px;
+	margin-left:auto;
+	margin-right: auto;
+	width:400px;
+	background-color:#FFBCBC;
+	border: none;
+	border-top: solid 10px #FF8D8D;
+	border-right: solid 10px #C191D1;
+	color: #20007E; 
+	line-height: 40pt; 
+	font-family: roboto; 
+	font-size:15pt; 
+	padding-left: 10px; 
+	outline:none;
+}
+#plant-svg{
+	position: fixed;
+	bottom: 30%;
+	left: 0;
+	right:0;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: #FFA2A2;
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: #FFA2A2;
+}
+:-ms-input-placeholder { /* IE 10+ */
+  color: #FFA2A2;
+}
+:-moz-placeholder { /* Firefox 18- */
+  color: #FFA2A2;
+}
