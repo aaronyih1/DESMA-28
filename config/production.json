@@ -1,6 +1,6 @@
 {
   "host": "FINAL-app.feathersjs.com",
-  "port": 3000,
+  "port": 80,
   "nedb": "NEDB_BASE_PATH",
   "public": "../public/",
   "auth": {

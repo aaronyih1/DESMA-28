@@ -191,13 +191,17 @@
           //     $(this).attr("data-ypos") +' '+
           //     $(this).attr("data-zpos") +' " material="src: #my-texture; side: double;" look-at="[camera]" text="align: center; color: black; value:'+$(this).attr("data-title")+'"><a-animation attribute="position" to=" '+newPointAbs.x+' '+0+' '+newPointAbs.z+'" dur="5000"></a-animation><a-animation attribute="scale" to="1 1 1" dur="5000"></a-animation></a-plane>');
           // });
+            var duration = 1500;
+            var durationLate = 1800;
+            var easingType = "ease-out-quart";
+            var easingTypeLate = "ease-out-quart";
             $('#test1').append('<a-text class="remove" id="'+$(this).attr("data-id")+'" position="'+
               $(this).attr("data-xpos") +' '+ 
               $(this).attr("data-ypos") +' '+
-              $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" width="10" color= "black" value=" '+$(this).attr("data-title")+'" scale="0.01 0.01 0.01"><a-animation attribute="position" to=" '+newPointAbs.x+' '+0+' '+newPointAbs.z+'" dur="5000"></a-animation><a-animation attribute="scale" to="1 1 1" dur="5000"></a-animation></a-text><a-box x-listener position="'+
+              $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" anchor="center" baseline="bottom" width="5" color= "black" value=" '+$(this).attr("data-title")+'" scale="0.01 0.01 0.01"><a-animation attribute="position" to=" '+newPointAbs.x+' '+0+' '+newPointAbs.z+'" dur="'+duration+'" easing="'+easingType+'"></a-animation><a-animation attribute="scale" to="1 1 1" dur="'+duration+'" easing="'+easingType+'"></a-animation></a-text><a-box x-listener position="'+
               $(this).attr("data-xpos") +' '+ 
               $(this).attr("data-ypos") +' '+
-              $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" color= "red" scale="0.01 0.01 0.01"><a-animation attribute="position" to=" '+newPointAbs.x+' '+'-0.5'+' '+newPointAbs.z+'" dur="5000"></a-animation><a-animation attribute="scale" to="0.3 0.3 0.3" dur="5000"></a-animation></a-box>');
+              $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" color= "red" scale="0.1 0.1 0.1"><a-animation attribute="position" to=" '+newPointAbs.x+' '+'-0.2'+' '+newPointAbs.z+'" dur="'+durationLate+'" easing="'+easingTypeLate+'"></a-animation><a-animation attribute="scale" to="0.1 0.1 0.1" dur="'+durationLate+'" easing="'+easingTypeLate+'"></a-animation></a-box>');
           });
           //   $('#test1').append('<a-entity id="'+$(this).attr("data-id")+'" height="1" width="2" position="'+
           //     $(this).attr("data-xpos") +' '+ 
@@ -217,9 +221,8 @@
         init: function () {
           // var COLORS = ['red', 'green', 'blue'];
           this.el.addEventListener('click', function (evt) {
-            // console.log($("'#"+$(this).attr("id")+"'"));
             // alert($("'#"+$(this).attr("data-id")+"'"));
-            $(".remove").remove();
+            $(this).prev().remove();
             $(this).remove();
             // var randomIndex = Math.floor(Math.random() * COLORS.length);
             // this.setAttribute('material', 'color', COLORS[randomIndex]);
@@ -282,11 +285,14 @@
     }
     $( document ).ready(function() {
         $(document).trigger('testEvent');
+        $(document).on('click', function(){
+          console.log("I CLICKED");
+        })
         $("#plant-button").on("click", function(){
           bool = false;
           // $(document).trigger("plant-here");
           $("#hand-rose").remove();
-          $("#plant-button").remove();
+          $("#plant-button").empty();
         });
 
     });
@@ -298,7 +304,7 @@
     //   $('#test1').append('<a-entity template="src: #rose" data-yPos="'+2+'"></a-entity>');
     // });
     $(document).on('testEvent', function(e) { 
-      $.get( "http://192.168.1.5:3030/flowers/?$limit=false", function( data ) {
+      $.get( "http://131.179.17.236:3030/flowers/?$limit=false", function( data ) {
         for(var i = 0; i<data.data.length;i++){
           var a = new THREE.Vector3(data.data[i].xpos, data.data[i].ypos, data.data[i].zpos);
 
@@ -350,7 +356,7 @@
 <!--       <a-plane ground-listener position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#7BC8A4"></a-plane> -->
       <a-entity id="landscape" ground-listener obj-model="obj: #landscape-obj; mtl: #landscape-mtl;" position="75.88 -63.16 3.64" scale="1 1 1" ></a-entity>
       <a-entity id = "camera" camera="userHeight: 0" look-controls>
-        <a-cursor id="cursor"></a-cursor>
+        <a-cursor id="cursor" fuse="false"></a-cursor>
       </a-entity>
     </a-scene>
     <div id="input-modal"></div>
