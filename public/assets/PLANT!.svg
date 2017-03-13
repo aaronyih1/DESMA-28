@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="259px" height="64px" viewBox="0 0 259 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+    <title>PLANT!</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Text-Box" transform="translate(-415.000000, -154.000000)">
+            <g id="PLANT!" transform="translate(415.000000, 154.000000)">
+                <rect id="Rectangle-Copy-5" fill="#57E6BA" x="0" y="13" width="249" height="51"></rect>
+                <polygon id="Rectangle-Copy-6" fill="#FF8D8D" points="7.91343672 0 258.262088 0 250.348652 12.6148394 0 12.6148394"></polygon>
+                <text font-family="Roboto-Bold, Roboto" font-size="22" font-weight="bold" letter-spacing="0.73333329" fill="#20007E">
+                    <tspan x="84.5890626" y="44">PLANT!</tspan>
+                </text>
+                <polygon id="Rectangle-Copy-7" fill="#32BBB7" points="249 12.6148394 258.682307 0 258.682307 51 249 63.6148394"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>
