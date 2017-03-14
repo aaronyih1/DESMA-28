@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Hello, World! - A-Frame</title>
+    <title>Greetings — Aaron Yih's Project for DESMA 28</title>
     <meta name="description" content="Hello, World! - A-Frame">
     <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
     <script src="https://npmcdn.com/aframe-template-component@3.1.1"></script>
@@ -201,7 +201,7 @@
               $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" anchor="center" baseline="bottom" width="5" color= "black" value=" '+$(this).attr("data-title")+'" scale="0.01 0.01 0.01"><a-animation attribute="position" to=" '+newPointAbs.x+' '+0+' '+newPointAbs.z+'" dur="'+duration+'" easing="'+easingType+'"></a-animation><a-animation attribute="scale" to="1 1 1" dur="'+duration+'" easing="'+easingType+'"></a-animation></a-text><a-box x-listener position="'+
               $(this).attr("data-xpos") +' '+ 
               $(this).attr("data-ypos") +' '+
-              $(this).attr("data-zpos") +' " look-at="[camera]" align= "center" color= "red" scale="0.1 0.1 0.1"><a-animation attribute="position" to=" '+newPointAbs.x+' '+'-0.2'+' '+newPointAbs.z+'" dur="'+durationLate+'" easing="'+easingTypeLate+'"></a-animation><a-animation attribute="scale" to="0.1 0.1 0.1" dur="'+durationLate+'" easing="'+easingTypeLate+'"></a-animation></a-box>');
+              $(this).attr("data-zpos") +' " align= "center" color= "#FF8D8D" scale="0.1 0.1 0.1"><a-animation attribute="position" to=" '+newPointAbs.x+' '+'-0.2'+' '+newPointAbs.z+'" dur="'+durationLate+'" easing="'+easingTypeLate+'" direction="normal"></a-animation><a-animation attribute="scale" to="0.1 0.1 0.1" dur="'+durationLate+'" easing="'+easingTypeLate+'" direction="normal"></a-animation><a-animation attribute="rotation" to="360 360 360" dur="1800" repeat="indefinite" easing="linear" direction="normal"></a-animation></a-box>');
           });
           //   $('#test1').append('<a-entity id="'+$(this).attr("data-id")+'" height="1" width="2" position="'+
           //     $(this).attr("data-xpos") +' '+ 
@@ -240,7 +240,7 @@
             // this.setAttribute('material', 'color', COLORS[randomIndex]);
             if(bool == false){
               $('#hand-rose').empty();
-              $.post( "http://localhost:3030/flowers", { title: dInput, xpos: evt.detail.intersection.point.x, ypos:evt.detail.intersection.point.y, zpos:evt.detail.intersection.point.z })
+              $.post( "/flowers", { title: dInput, xpos: evt.detail.intersection.point.x, ypos:evt.detail.intersection.point.y, zpos:evt.detail.intersection.point.z })
                 .done(function( data ) {
                   // alert( "Data Loaded: " + data );
                   $(document).trigger('testEvent');
@@ -313,7 +313,7 @@
 
           var d = a.distanceTo( b );
           console.log("the vector is:" + d);
-          $('#test1').append('<a-entity flower-listener template="src: #rose" data-id="'+data.data[i]._id+'" data-title="'+data.data[i].title+'" data-xPos="'+data.data[i].xpos+'"data-yPos="'+data.data[i].ypos+'" data-zPos="'+data.data[i].zpos+'" data-scale=" +'+d.map(0,600,0.5,30)+'"></a-entity>');
+          $('#test1').append('<a-entity flower-listener template="src: #rose" data-id="'+data.data[i]._id+'" data-title="'+data.data[i].title+'" data-xPos="'+data.data[i].xpos+'"data-yPos="'+data.data[i].ypos+'" data-zPos="'+data.data[i].zpos+'" data-scale=" +'+d.map(0,600,0.7,30)+'"></a-entity>');
 
         }
         // $( ".result" ).html( data );
@@ -330,8 +330,9 @@
         <a-asset-item id="rose-mtl" src="/assets/rose.mtl"></a-asset-item>
         <a-asset-item id="vase-obj" src="/assets/vase.obj"></a-asset-item>
         <a-asset-item id="vase-mtl" src="/assets/vase.mtl"></a-asset-item>
-        <a-asset-item id="text-obj" src="/assets/text-obj.obj"></a-asset-item>
-        <a-asset-item id="text-mtl" src="/assets/text-obj.mtl"></a-asset-item>
+        <a-asset-item id="cloud-obj" src="/assets/cloud.obj"></a-asset-item>
+        <a-asset-item id="cloud-mtl" src="/assets/cloud.mtl"></a-asset-item>
+        <img id="sky" src="/assets/sky.png">
         <script id="rose" type="text/html">
           <a-entity class="link"
             obj-model="obj: #rose-obj; mtl: #rose-mtl;"
@@ -358,6 +359,18 @@
       <a-entity id = "camera" camera="userHeight: 0" look-controls>
         <a-cursor id="cursor" fuse="false"></a-cursor>
       </a-entity>
+      <a-sky src="#sky" rotation="0 -38.46 -90"></a-sky>
+      <a-entity light="type: ambient; color: #AAAABB intensity: 1.28;" ></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.1; angle:60.28;" position="315.22 461.29 -401.06" rotation="-40 0 0"></a-entity>
+
+      <a-entity obj-model="obj: #cloud-obj; mtl:#cloud-mtl;" scale="5 5 5" position="-25.57 -7.63 -3.27" ><a-animation attribute="position" from="-25.57 -20.63 -3.27" to="-25.57 100 -3.27" repeat="indefinite" dur="9000" direction="alternate" easing="linear"></a-animation></a-entity>
+      <a-entity obj-model="obj: #cloud-obj; mtl:#cloud-mtl;" scale="5 5 5" position="-149 7.63 -69.47" ><a-animation attribute="position" from="-149 7.63 -69.47" to="-149 100 -69.47" repeat="indefinite" dur="7000" direction="alternate" easing="linear"></a-animation></a-entity>
+      <a-entity obj-model="obj: #cloud-obj; mtl:#cloud-mtl;" scale="5 5 5" position="30.01 -20.63 39.69" rotation="0 120 0" ><a-animation attribute="position" easing="linear" from="30.01 -20.63 39.69" to="30.01 200 39.69" repeat="indefinite" dur="7000" direction="alternate" delay="4000"></a-animation></a-entity>
+      <a-entity obj-model="obj: #cloud-obj; mtl:#cloud-mtl;" scale="5 5 5" position="30.01 140 -84.36" rotation="0 250 0" ><a-animation attribute="position" easing="linear" to="30.01 -20.63 -84.36" from="30.01 140 -84.36" repeat="indefinite" dur="7000" direction="alternate" delay="2000"></a-animation></a-entity>
+      <a-entity obj-model="obj: #cloud-obj; mtl:#cloud-mtl;" scale="5 5 5" position="163 180 -180.13" rotation="0 50 0" ><a-animation attribute="position" easing="linear" to="163 53.41 -180.13" from="163 180 -180.13" repeat="indefinite" dur="7000" direction="alternate" delay="3000"></a-animation></a-entity>
+      <a-entity obj-model="obj: #cloud-obj; mtl:#cloud-mtl;" scale="5 5 5" position="167.42 150 -38.95" rotation="0 333 0" ><a-animation attribute="position" easing="linear" from="167.42 14.25 -38.95" to="167.42 150 -38.95" repeat="indefinite" dur="10000" direction="alternate" delay="5050"></a-animation></a-entity>
+      <a-entity obj-model="obj: #cloud-obj; mtl:#cloud-mtl;" scale="5 5 5" position="-102.37 -7.63 132.9" rotation="0 76 0" ><a-animation attribute="position" easing="linear" to="-102.37 -7.63 132.9" from="-102.37 140 132.9" repeat="indefinite" dur="6000" direction="alternate" delay="1300"></a-animation></a-entity>
     </a-scene>
     <div id="input-modal"></div>
     <div id="plant-button"></div>
